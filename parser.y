@@ -1,3 +1,9 @@
+/* Bison file. parser.y
+   Generates an AST from the grammer tokenised by the lexer.l
+   created: 2012-04-05
+   modified: 2012-04-10
+ */
+
 %{
   #include <stdio.h>
     #include "node.h"
