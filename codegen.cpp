@@ -2,7 +2,7 @@
 #include "codegen.h"
 #include "parser.hpp"
 
-using namesapce std;
+using namespace std;
 
 /* Compile AST into a Module */
 void CodeGenContext::generateCode(NBlock& root)
@@ -34,10 +34,8 @@ GenericValue CodeGenContext::runCode()
 {
   std::cout << "Executing Code...\n";
 
-  ExistingModuleProvider *mp = new ExistingModuleProvider(module);
-  ExecutionEngine *ee = ExecutionEngine::create(mp, false);
-
-  vector<GenericValue> noargs;
+  ExecutionEngine *ee = EngineBuilder(module).create();
+  std::vector<GenericValue> noargs;
 
   GenericValue v = ee->runFunction(mainFunction, noargs);
   std::cout << "Code Execution Finished.\n";
@@ -52,13 +50,25 @@ static const Type *typeOf(const NIdentifier& type)
     return Type::getInt16Ty(getGlobalContext());
   }
   else if ( type.name.compare("double") == 0 ) {
-    return Type::getdoubleTy(getGlobalContext());
+    return Type::getDoubleTy(getGlobalContext());
   }
-  return type::getVoidTy(getGlobalContext());
+  return Type::getVoidTy(getGlobalContext());
 }
 
 /* Code Generation functions.
  * These transform from the AST into instruction set words.
  */
+
+Value* NBlock::codeGen(CodeGenContext& context)
+{
+	StatementList::const_iterator it;
+	Value *last = NULL;
+	for (it = statements.begin(); it != statements.end(); it++) {
+		std::cout << "Generating code for " << typeid(**it).name() << endl;
+		last = (**it).codeGen(context);
+	}
+	std::cout << "Creating block" << endl;
+	return last;
+}
 
 /* Finish these up later, heh. */
